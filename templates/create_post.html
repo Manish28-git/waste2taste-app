@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Create a New Post{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">Create a New Food Post</h1>
+
+    <!-- Create Post Form -->
+    <form id="create-post-form" class="space-y-6">
+        <div>
+            <label for="food_name" class="text-sm font-medium text-gray-700">Food Name</label>
+            <input type="text" id="food_name" name="food_name" required
+                   class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+        </div>
+
+        <div>
+            <label for="description" class="text-sm font-medium text-gray-700">Description</label>
+            <textarea id="description" name="description" rows="3"
+                      class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+        </div>
+
+        <div>
+            <label for="quantity" class="text-sm font-medium text-gray-700">Quantity (e.g., 2 loaves, 500g)</label>
+            <input type="text" id="quantity" name="quantity" required
+                   class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+        </div>
+
+        <div>
+            <label for="location" class="text-sm font-medium text-gray-700">Location</label>
+            <input type="text" id="location" name="location" required
+                   class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                   value="Bengaluru, Karnataka, India">
+        </div>
+
+        <div>
+            <label for="expiry_time_input" class="text-sm font-medium text-gray-700">Expiry Date and Time (IST)</label>
+            <input type="datetime-local" id="expiry_time_input" name="expiry_time_input" required
+                   class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+        </div>
+
+        <div>
+            <button type="submit"
+                    class="w-full px-4 py-2 font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Create Post
+            </button>
+        </div>
+    </form>
+
+    <!-- Message area for feedback -->
+    <div id="message-area" class="text-center mt-4"></div>
+</div>
+
+<script>
+    const form = document.getElementById('create-post-form');
+    const messageArea = document.getElementById('message-area');
+    const token = localStorage.getItem('access_token');
+
+    // Protect the page: redirect if not logged in
+    if (!token) {
+        window.location.href = '/login';
+    }
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        messageArea.innerHTML = '';
+        messageArea.className = 'text-center mt-4';
+
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        // **TIMEZONE FIX:**
+        // 1. Create a Date object from the local time string provided by the input.
+        //    The browser correctly assumes this is in the user's local timezone (IST).
+        const localDate = new Date(data.expiry_time_input);
+        // 2. Convert this local time to a full ISO string in UTC. This is the format
+        //    the server expects and can parse correctly.
+        data.expiry_time = localDate.toISOString();
+        delete data.expiry_time_input; // Remove the temporary input field from the data
+
+        try {
+            const response = await fetch('/api/posts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                messageArea.textContent = 'Post created successfully! Redirecting...';
+                messageArea.classList.add('text-green-600');
+                setTimeout(() => {
+                    window.location.href = '/posts';
+                }, 2000);
+            } else {
+                messageArea.textContent = result.error || 'An unknown error occurred.';
+                messageArea.classList.add('text-red-600');
+            }
+        } catch (error) {
+            messageArea.textContent = 'Could not connect to the server.';
+            messageArea.classList.add('text-red-600');
+        }
+    });
+</script>
+{% endblock %}

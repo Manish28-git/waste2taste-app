@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Available Food Posts{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="text-center">
+        <h1 class="text-4xl font-bold text-gray-800">Find Fresh Food Nearby</h1>
+        <p class="mt-2 text-lg text-gray-600">Help reduce waste by claiming a post today.</p>
+    </div>
+    
+    <div id="message-area" class="text-center"></div>
+
+    <div id="posts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Posts will be loaded here by JavaScript -->
+    </div>
+</div>
+
+<script>
+    const postsContainer = document.getElementById('posts-container');
+    const messageArea = document.getElementById('message-area');
+    const token = localStorage.getItem('access_token');
+
+    async function fetchPosts() {
+        try {
+            const response = await fetch('/api/posts');
+            if (!response.ok) throw new Error('Failed to fetch posts.');
+            const posts = await response.json();
+            
+            postsContainer.innerHTML = '';
+
+            if (posts.length === 0) {
+                postsContainer.innerHTML = '<p class="text-gray-600 col-span-full text-center text-lg mt-8">No available food posts right now. Be the first to create one!</p>';
+                return;
+            }
+
+            const dateOptions = {
+                timeZone: 'Asia/Kolkata',
+                year: 'numeric', month: 'short', day: 'numeric',
+                hour: 'numeric', minute: '2-digit', hour12: true
+            };
+
+            posts.forEach(post => {
+                const postElement = document.createElement('div');
+                postElement.className = 'bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-1 transition-all duration-300';
+                
+                const postDate = new Date(post.post_time).toLocaleString('en-IN', dateOptions);
+                const expiryDate = new Date(post.expiry_time).toLocaleString('en-IN', dateOptions);
+
+                const claimButtonHtml = token 
+                    ? `<button onclick="claimPost(${post.id})" class="btn-primary w-full mt-4 px-4 py-3 font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-all duration-300">Claim This Item</button>`
+                    : '<p class="text-sm text-center text-gray-500 mt-4">Please <a href="/login" class="text-indigo-600 font-semibold">log in</a> to claim.</p>';
+
+                postElement.innerHTML = `
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">${post.food_name}</h3>
+                        <p class="text-gray-700 mb-4">${post.description || 'No description provided.'}</p>
+                        
+                        <div class="space-y-2 text-gray-600 text-sm">
+                            <div class="flex items-center"><i data-lucide="package" class="w-4 h-4 mr-2 text-gray-500"></i><strong>Quantity:</strong><span class="ml-1">${post.quantity}</span></div>
+                            <div class="flex items-center"><i data-lucide="map-pin" class="w-4 h-4 mr-2 text-gray-500"></i><strong>Location:</strong><span class="ml-1">${post.location}</span></div>
+                            <div class="flex items-center"><i data-lucide="calendar" class="w-4 h-4 mr-2 text-gray-500"></i><strong>Expires:</strong><span class="ml-1">${expiryDate}</span></div>
+                        </div>
+                        
+                        ${claimButtonHtml}
+                    </div>
+                `;
+                postsContainer.appendChild(postElement);
+            });
+            // Initialize icons after adding new elements
+            lucide.createIcons();
+        } catch (error) {
+            postsContainer.innerHTML = `<p class="text-red-600 col-span-full text-center">${error.message}</p>`;
+        }
+    }
+
+    async function claimPost(postId) {
+        // ... (claimPost function remains the same)
+        if (!token) {
+            alert('You must be logged in to claim a post.');
+            return;
+        }
+        try {
+            const response = await fetch(`/api/posts/${postId}/claim`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const result = await response.json();
+            messageArea.className = 'text-center p-3 rounded-lg';
+            if (response.ok) {
+                messageArea.textContent = result.message;
+                messageArea.classList.add('bg-green-100', 'text-green-800');
+                fetchPosts(); 
+            } else {
+                messageArea.textContent = result.error || 'Failed to claim post.';
+                messageArea.classList.add('bg-red-100', 'text-red-800');
+            }
+        } catch (error) {
+            messageArea.textContent = 'Could not connect to the server.';
+            messageArea.classList.add('bg-red-100', 'text-red-800');
+        }
+        setTimeout(() => { messageArea.innerHTML = ''; }, 4000);
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchPosts);
+</script>
+{% endblock %}

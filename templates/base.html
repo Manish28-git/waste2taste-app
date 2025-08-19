@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Waste2Taste{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonts and Custom CSS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Icon Library -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="font-sans">
+
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <a href="/posts" class="flex items-center space-x-2">
+                    <!-- Simple SVG Logo -->
+                    <svg class="h-8 w-8 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a10 10 0 0 0 10-10H2a10 10 0 0 0 10 10Z"/><path d="M2 12a10 10 0 0 1 10-10v10H2Z"/><path d="m22 12-3-3-3 3"/><path d="M19 9V2.5"/><path d="M12 12a10 10 0 0 0 10 10V12H12Z"/></svg>
+                    <span class="font-bold text-xl text-gray-700">Waste2Taste</span>
+                </a>
+                <!-- Primary Navbar items -->
+                <div id="nav-links" class="hidden md:flex items-center space-x-3">
+                    <!-- Links will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="py-10">
+        <div class="max-w-6xl mx-auto px-4">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.getElementById('nav-links');
+            const token = localStorage.getItem('access_token');
+
+            if (token) {
+                // User is logged in
+                navLinks.innerHTML = `
+                    <a href="/dashboard" class="py-2 px-3 font-medium text-gray-600 rounded-md hover:bg-gray-100 transition duration-300">My Posts</a>
+                    <a href="/my-claims" class="py-2 px-3 font-medium text-gray-600 rounded-md hover:bg-gray-100 transition duration-300">My Claims</a>
+                    <a href="/profile" class="py-2 px-3 font-medium text-gray-600 rounded-md hover:bg-gray-100 transition duration-300">My Profile</a>
+                    <a href="/create-post" class="btn-primary py-2 px-4 font-medium text-white bg-green-500 rounded-md shadow-sm hover:bg-green-600 transition duration-300">Create Post</a>
+                    <button onclick="logout()" class="btn-primary py-2 px-4 font-medium text-white bg-red-500 rounded-md shadow-sm hover:bg-red-600 transition duration-300">Logout</button>
+                `;
+            } else {
+                // User is a guest
+                navLinks.innerHTML = `
+                    <a href="/login" class="py-2 px-3 font-medium text-gray-600 rounded-md hover:bg-gray-100 transition duration-300">Log In</a>
+                    <a href="/register" class="btn-primary py-2 px-4 font-medium text-white bg-green-500 rounded-md shadow-sm hover:bg-green-600 transition duration-300">Register</a>
+                `;
+            }
+            navLinks.classList.remove('hidden');
+            // Initialize icons
+            lucide.createIcons();
+        });
+
+        function logout() {
+            localStorage.removeItem('access_token');
+            window.location.href = '/login';
+        }
+    </script>
+</body>
+</html>
