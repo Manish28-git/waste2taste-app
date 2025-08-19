@@ -6,10 +6,8 @@
 <div class="max-w-4xl mx-auto">
     <h1 class="text-3xl font-bold text-gray-800 mb-6">My Food Posts</h1>
 
-    <!-- Message area for feedback (e.g., after deleting a post) -->
     <div id="message-area" class="text-center mb-4"></div>
 
-    <!-- Table to display the user's posts -->
     <div class="bg-white shadow-md rounded-lg overflow-hidden">
         <table class="min-w-full leading-normal">
             <thead>
@@ -29,7 +27,6 @@
                 </tr>
             </thead>
             <tbody id="my-posts-tbody">
-                <!-- Rows will be inserted here by JavaScript -->
             </tbody>
         </table>
     </div>
@@ -40,12 +37,10 @@
     const messageArea = document.getElementById('message-area');
     const token = localStorage.getItem('access_token');
 
-    // Protect the page: redirect if not logged in
     if (!token) {
         window.location.href = '/login';
     }
 
-    // Function to fetch and display the user's posts
     async function fetchMyPosts() {
         try {
             const response = await fetch('/api/posts/my-posts', {
@@ -124,7 +119,7 @@
             if (response.ok) {
                 messageArea.textContent = result.message;
                 messageArea.classList.add('bg-green-100', 'text-green-700');
-                fetchMyPosts(); // Refresh the list after deletion
+                fetchMyPosts(); 
             } else {
                 messageArea.textContent = result.error || 'Failed to delete post.';
                 messageArea.classList.add('bg-red-100', 'text-red-700');

@@ -69,14 +69,11 @@
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
 
-        // **TIMEZONE FIX:**
-        // 1. Create a Date object from the local time string provided by the input.
-        //    The browser correctly assumes this is in the user's local timezone (IST).
+        
         const localDate = new Date(data.expiry_time_input);
-        // 2. Convert this local time to a full ISO string in UTC. This is the format
-        //    the server expects and can parse correctly.
+        
         data.expiry_time = localDate.toISOString();
-        delete data.expiry_time_input; // Remove the temporary input field from the data
+        delete data.expiry_time_input; 
 
         try {
             const response = await fetch('/api/posts', {

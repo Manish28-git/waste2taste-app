@@ -7,7 +7,6 @@
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* A simple style for the body background */
         body {
             background-color: #f8fafc;
         }
@@ -55,20 +54,16 @@
             </div>
         </form>
 
-        <!-- Message area for success or error feedback -->
         <div id="message-area" class="text-center"></div>
     </div>
 
     <script>
-        // JavaScript to handle form submission
         const form = document.getElementById('register-form');
         const messageArea = document.getElementById('message-area');
 
         form.addEventListener('submit', async (event) => {
-            // Prevent the default browser form submission
             event.preventDefault();
 
-            // Clear any previous messages
             messageArea.innerHTML = '';
             messageArea.className = 'text-center';
 
@@ -77,7 +72,6 @@
             const data = Object.fromEntries(formData.entries());
 
             try {
-                // Send the data to the API endpoint
                 const response = await fetch('/api/auth/register', {
                     method: 'POST',
                     headers: {
@@ -93,9 +87,8 @@
                     messageArea.textContent = result.message;
                     messageArea.classList.add('text-green-600');
                     form.reset(); // Clear the form
-                    // Redirect to login page after a short delay
                     setTimeout(() => {
-                        window.location.href = '/login'; // We will create this page next
+                        window.location.href = '/login'; 
                     }, 2000);
                 } else {
                     // Handle errors

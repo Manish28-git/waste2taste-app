@@ -1,4 +1,3 @@
-# scheduler.py
 from extensions import db
 from models.post import Post
 from datetime import datetime
@@ -9,7 +8,7 @@ def delete_expired_posts_job(app):
     """
     with app.app_context():
         try:
-            # Find posts where the expiry_time is in the past
+            
             expired_posts = Post.query.filter(Post.expiry_time < datetime.utcnow()).all()
 
             if not expired_posts:

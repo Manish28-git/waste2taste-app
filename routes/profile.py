@@ -34,7 +34,6 @@ def update_profile():
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    # Update fields if they are provided in the request
     user.full_name = data.get("full_name", user.full_name)
     user.location = data.get("location", user.location)
 

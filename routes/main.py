@@ -1,4 +1,4 @@
-# routes/main.py
+
 from flask import Blueprint, render_template
 
 main_bp = Blueprint("main", __name__)
@@ -15,7 +15,7 @@ def login_page():
 def posts_page():
     return render_template("posts.html")
 
-# Add this new route for the create post page
+
 @main_bp.route("/create-post")
 def create_post_page():
     """Serves the page for creating a new food post."""
@@ -27,7 +27,7 @@ def dashboard_page():
     """Serves the donor dashboard page."""
     return render_template("donor_dashboard.html")
 
-# Add this new route for the receiver's claim history
+
 @main_bp.route("/my-claims")
 def my_claims_page():
     """Serves the receiver's claim history page."""

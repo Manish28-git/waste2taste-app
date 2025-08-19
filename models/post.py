@@ -1,4 +1,4 @@
-# models/post.py
+
 from extensions import db
 from datetime import datetime
 
@@ -13,7 +13,7 @@ class Post(db.Model):
     post_time = db.Column(db.DateTime, default=datetime.utcnow)
     expiry_time = db.Column(db.DateTime, nullable=False)
 
-    # Foreign Key to link to the user who created the post
+    
     donor_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
     # Relationship to access the User object

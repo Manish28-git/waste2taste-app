@@ -1,23 +1,21 @@
-# routes/auth.py
 
 from flask import Blueprint, request, jsonify
 from extensions import db
 from models.user import User
-# Import JWT functions
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
 auth_bp = Blueprint("auth", __name__)
 
-# ... (your /register route stays the same) ...
+
 @auth_bp.route("/register", methods=["POST"])
 def register():
     data = request.get_json()
 
-    # Add 'role' to the required fields check
+    
     if not all(key in data for key in ["username", "email", "password", "role"]):
         return jsonify({"error": "Username, email, password, and role are required"}), 400
 
-    # Validate the role
+    
     role = data.get("role")
     if role not in ['donor', 'receiver']:
         return jsonify({"error": "Invalid role. Must be 'donor' or 'receiver'"}), 400
@@ -31,7 +29,7 @@ def register():
     new_user = User(
         username=data["username"],
         email=data["email"],
-        role=role  # Set the user's role
+        role=role  
     )
     new_user.set_password(data["password"])
 
@@ -49,17 +47,16 @@ def login():
     user = User.query.filter_by(email=data["email"]).first()
 
     if user and user.check_password(data["password"]):
-        # Create a token! The "identity" is the data we store in the token.
         access_token = create_access_token(identity=str(user.id))
-        return jsonify(access_token=access_token), 200 # Return the token
+        return jsonify(access_token=access_token), 200 
     else:
         return jsonify({"error": "Invalid email or password"}), 401
 
-# NEW PROTECTED ROUTE FOR TESTING
+
 @auth_bp.route("/profile", methods=["GET"])
-@jwt_required() # This decorator protects the route
+@jwt_required() 
 def profile():
-    # We can get the user's ID from the token
+    
     current_user_id = get_jwt_identity()
     user = User.query.get(current_user_id)
     

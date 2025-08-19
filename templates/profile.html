@@ -40,7 +40,6 @@
         </div>
     </form>
 
-    <!-- Message area for feedback -->
     <div id="message-area" class="text-center mt-4"></div>
 </div>
 
@@ -54,7 +53,6 @@
         window.location.href = '/login';
     }
 
-    // Function to fetch and populate profile data
     async function fetchProfile() {
         try {
             const response = await fetch('/api/profile', {

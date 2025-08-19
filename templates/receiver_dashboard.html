@@ -6,7 +6,6 @@
 <div class="max-w-4xl mx-auto">
     <h1 class="text-3xl font-bold text-gray-800 mb-6">My Claimed Food</h1>
 
-    <!-- Table to display the user's claimed posts -->
     <div class="bg-white shadow-md rounded-lg overflow-hidden">
         <table class="min-w-full leading-normal">
             <thead>
@@ -23,7 +22,6 @@
                 </tr>
             </thead>
             <tbody id="my-claims-tbody">
-                <!-- Rows will be inserted here by JavaScript -->
             </tbody>
         </table>
     </div>
@@ -33,12 +31,10 @@
     const tableBody = document.getElementById('my-claims-tbody');
     const token = localStorage.getItem('access_token');
 
-    // Protect the page: redirect if not logged in
     if (!token) {
         window.location.href = '/login';
     }
 
-    // Function to fetch and display the user's claimed posts
     async function fetchMyClaims() {
         try {
             const response = await fetch('/api/claims/my-claims', {

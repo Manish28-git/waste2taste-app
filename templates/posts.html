@@ -12,7 +12,6 @@
     <div id="message-area" class="text-center"></div>
 
     <div id="posts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <!-- Posts will be loaded here by JavaScript -->
     </div>
 </div>
 
@@ -67,7 +66,6 @@
                 `;
                 postsContainer.appendChild(postElement);
             });
-            // Initialize icons after adding new elements
             lucide.createIcons();
         } catch (error) {
             postsContainer.innerHTML = `<p class="text-red-600 col-span-full text-center">${error.message}</p>`;
@@ -75,7 +73,6 @@
     }
 
     async function claimPost(postId) {
-        // ... (claimPost function remains the same)
         if (!token) {
             alert('You must be logged in to claim a post.');
             return;
